@@ -74,6 +74,7 @@ export class SchedulingModel {
 
             const data: SchedulingCreateResponse = await response.json();
 
+            await new Promise(res => setTimeout(res, 200));
             await fetch(`${this.baseUrl}/mock/triagem?id=${data.agendamento.id}`, {
                 method: "POST",
                 headers: {
