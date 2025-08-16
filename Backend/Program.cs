@@ -28,15 +28,17 @@ builder.Services.AddAuthentication(options => {
     };
 });
 
-//* Injetar serviços
-// builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-// builder.Services.AddScoped<IAgendamentoService, AgendamentoService>();
-// builder.Services.AddScoped<ITriagemService, TriagemService>();
-
 //* Adicionar controllers
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
+
+//* Permitindo o CORS
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowLocalhost", policy => {
+        policy.WithOrigins(builder.Configuration["Front:Url"] ?? throw new Exception("URL do Front não configurado no appsettings.json")).AllowAnyHeader().AllowAnyMethod();
+    });
+});
 
 var app = builder.Build();
 
@@ -46,15 +48,14 @@ var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 try {
     db.Database.CanConnect(); // retorna true se a conexão funcionar
     Console.WriteLine("Conexão com o PostgreSQL OK!");
-}
-catch (Exception ex) {
+} catch (Exception ex) {
     Console.WriteLine("Erro na conexão: " + ex.Message);
 }
-
 
 //* Middleware
 if (app.Environment.IsDevelopment()) app.MapOpenApi();
 
+app.UseCors("AllowLocalhost");
 app.UseHttpsRedirection();
 
 app.UseAuthentication();

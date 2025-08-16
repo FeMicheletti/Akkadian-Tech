@@ -12,15 +12,18 @@ using Microsoft.IdentityModel.Tokens;
 namespace ClinicaAPI.Controllers {
     [ApiController]
     [Route("[controller]")]
-    public class AuthController : ControllerBase {
+    public class AuthController : ControllerBase
+    {
         private readonly AppDbContext _db;
 
         public AuthController(AppDbContext db) { _db = db; }
 
         //* POST /auth/register
         [HttpPost("register")]
-        public IActionResult Register([FromBody] User usuario) {
-            if (string.IsNullOrWhiteSpace(usuario.Email) || string.IsNullOrWhiteSpace(usuario.Name) || string.IsNullOrWhiteSpace(usuario.Password) || usuario.Role == null) {
+        public IActionResult Register([FromBody] User usuario)
+        {
+            if (string.IsNullOrWhiteSpace(usuario.Email) || string.IsNullOrWhiteSpace(usuario.Name) || string.IsNullOrWhiteSpace(usuario.Password) || usuario.Role == null)
+            {
                 return BadRequest(new { error = "Informação faltando, favor verificar." });
             }
 
@@ -41,8 +44,10 @@ namespace ClinicaAPI.Controllers {
 
         //* POST /auth/login
         [HttpPost("login")]
-        public IActionResult Login([FromBody] User usuario) {
-            if (string.IsNullOrWhiteSpace(usuario.Email) || string.IsNullOrWhiteSpace(usuario.Password)) {
+        public IActionResult Login([FromBody] User usuario)
+        {
+            if (string.IsNullOrWhiteSpace(usuario.Email) || string.IsNullOrWhiteSpace(usuario.Password))
+            {
                 return BadRequest(new { error = "Informação faltando, favor verificar." });
             }
 
@@ -56,7 +61,8 @@ namespace ClinicaAPI.Controllers {
             var keyBytes = Encoding.ASCII.GetBytes(jwtKey);
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenDescriptor = new SecurityTokenDescriptor {
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
                 Subject = new ClaimsIdentity([
                     new Claim(ClaimTypes.NameIdentifier, userDb.Id.ToString()),
                     new Claim(ClaimTypes.Role, userDb.Role ?? throw new Exception("Sem Role")),
@@ -73,6 +79,14 @@ namespace ClinicaAPI.Controllers {
             var tokenString = tokenHandler.WriteToken(token);
 
             return Ok(new { token = tokenString, userId = userDb.Id, role = userDb.Role });
+        }
+
+        //* GET /auth/validation
+        [Authorize]
+        [HttpGet("validation")]
+        public IActionResult Validation()
+        {
+            return Ok(new { status = "Ok" });
         }
     }
 }

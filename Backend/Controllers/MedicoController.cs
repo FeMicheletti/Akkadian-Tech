@@ -23,7 +23,7 @@ namespace ClinicaAPI.Controllers {
             var allScheduling = _db.Schedulings.Where(u => u.DoctorId == userId).ToList();
             Console.WriteLine(allScheduling);
 
-            return Ok(new { usuarioId = userId, agendamentos = allScheduling });
+            return Ok(new { agendamentos = allScheduling });
         }
     }
 }

@@ -5,25 +5,23 @@ services:
       dockerfile: Dockerfile
     container_name: ClinicaBackend
     ports:
-      - "5000:5000" # Ajuste para a porta real do backend
+      - "5000:5000"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
     depends_on:
       - db
 
-  # frontend:
-  #   build:
-  #     context: ./Frontend
-  #     dockerfile: Dockerfile
-  #   container_name: akkadian_frontend
-  #   ports:
-  #     - "3000:3000" # Ajuste para a porta real do frontend
-  #   env_file:
-  #     - ./Frontend/.env
-  #   volumes:
-  #     - ./Frontend:/app
-  #   depends_on:
-  #     - backend
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: ClinicaFrontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./Frontend/.env
+    depends_on:
+      - backend
 
   db:
     image: postgres:17
@@ -37,7 +35,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
 
 volumes:
   postgres_data:
