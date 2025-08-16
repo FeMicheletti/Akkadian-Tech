@@ -34,7 +34,7 @@ export class UserModel {
             const data: LoginResponse = await response.json();
 
             return data;
-        } catch (error: any) {
+        } catch (error) {
             console.error("Login error:", error);
             return {error: "Ocorreu algum erro. Favor tentar novamente."};
         }
@@ -63,7 +63,7 @@ export class UserModel {
 
             const data: User = await response.json();
             return data;
-        } catch (error: any) {
+        } catch (error) {
             console.error("Login error:", error);
             return {error: "Ocorreu algum erro. Favor tentar novamente."};
         }

@@ -23,12 +23,12 @@ export default function RootLayout({ children }: LayoutProps) {
             if (!token) redirectLogin();
 
             try {
-                var baseUrl = process.env.API_URL || "http://localhost:5000";;
+                const baseUrl = process.env.API_URL || "http://localhost:5000";
                 const res = await fetch(`${baseUrl}/auth/validation`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 if (!res.ok) redirectLogin();
-            } catch (error) {
+            } catch {
 				redirectLogin();
             }
         };

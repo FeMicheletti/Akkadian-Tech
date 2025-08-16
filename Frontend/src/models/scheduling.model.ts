@@ -1,6 +1,6 @@
 //* Types
 import { ErrorResponse } from "@/types/general.types";
-import { SchedulingPayload, SchedulingResponse } from "@/types/scheduling.types";
+import { SchedulingCreateResponse, SchedulingPayload, SchedulingResponse } from "@/types/scheduling.types";
 
 //* Models
 import { UserModel } from "./user.model";
@@ -18,9 +18,11 @@ export class SchedulingModel {
      *  
      *  @returns Promise<User | ErrorResponse>
      */
-    async getScheduling(): Promise<SchedulingResponse | ErrorResponse> {
-        var url = "/paciente/agendamentos";
+    async getScheduling(date?:string): Promise<SchedulingResponse | ErrorResponse> {
+        let url = "/paciente/agendamentos";
         if (UserModel.isMedico()) url = "/medico/agendamentos";
+
+        if (date) url += `?date=${date}`
 
         try {
             const response = await fetch(`${this.baseUrl}${url}`, {
@@ -42,7 +44,7 @@ export class SchedulingModel {
 
             const data: SchedulingResponse = await response.json();
             return data;
-        } catch (error: any) {
+        } catch (error) {
             console.error("Login error:", error);
             return {error: "Ocorreu algum erro. Favor tentar novamente."};
         }
@@ -54,7 +56,7 @@ export class SchedulingModel {
      *  @param payload Data e Descrição
      *  @returns Promise<User | ErrorResponse>
      */
-    async postScheduling(payload: SchedulingPayload): Promise<SchedulingResponse | ErrorResponse> {
+    async postScheduling(payload: SchedulingPayload): Promise<SchedulingCreateResponse | ErrorResponse> {
         try {
             const response = await fetch(`${this.baseUrl}/paciente/agendamentos`, {
                 method: "POST",
@@ -70,9 +72,17 @@ export class SchedulingModel {
                 return errorData;
             }
 
-            const data: SchedulingResponse = await response.json();
+            const data: SchedulingCreateResponse = await response.json();
+
+            await fetch(`${this.baseUrl}/mock/triagem?id=${data.agendamento.id}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            });
+
             return data;
-        } catch (error: any) {
+        } catch (error) {
             console.error("Login error:", error);
             return {error: "Ocorreu algum erro. Favor tentar novamente."};
         }

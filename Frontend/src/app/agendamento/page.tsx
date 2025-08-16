@@ -1,7 +1,7 @@
 "use client";
 
 //* React
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 //* Components
 import Header from "@/components/header.component";
@@ -15,7 +15,7 @@ import { SchedulingModel } from "@/models/scheduling.model";
 import { Scheduling, SchedulingPayload } from "@/types/scheduling.types";
 
 export default function Agendamento() {
-    const schedulingModel = new SchedulingModel();
+    const schedulingModel = useMemo(() => new SchedulingModel(), []);
 
     const [isMedico, setIsMedico] = useState<boolean>(false);
     const [expanded, setExpanded] = useState<number | null>(null);
@@ -30,23 +30,23 @@ export default function Agendamento() {
         if (typeof window !== "undefined") setIsMedico(UserModel.isMedico);
     }, []);
 
-    useEffect(() => {
-        const fetchAgendamentos = async () => {
-            try {
-                const response = await schedulingModel.getScheduling();
+    const fetchAgendamentos = async (date?:string) => {
+        try {
+            const response = await schedulingModel.getScheduling(date);
 
-                if ("agendamentos" in response) {
-                    setAgendamentos(response.agendamentos);
-                } else {
-                    toast.error(response.error, { style: { backgroundColor: "#ff4d4f", color: "white", fontWeight: 500 } });
-                }
-            } catch (error) {
-                console.error("Erro ao carregar agendamentos:", error);
-            } finally {
-                setLoading(false);
+            if ("agendamentos" in response) {
+                setAgendamentos(response.agendamentos);
+            } else {
+                toast.error(response.error, { style: { backgroundColor: "#ff4d4f", color: "white", fontWeight: 500 } });
             }
-        };
+        } catch (error) {
+            console.error("Erro ao carregar agendamentos:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchAgendamentos();
     }, []);
 
@@ -62,6 +62,11 @@ export default function Agendamento() {
         location.reload();
     };
 
+    const changeDate = (date:string) => {
+        fetchAgendamentos(date);
+        setNovaData(date);
+    }
+
     return (
         <div className="min-h-screen bg-gray-100">
             <Header/>
@@ -73,7 +78,7 @@ export default function Agendamento() {
                         <button onClick={() => setIsOpen(true)} className="text-white bg-[#03bb85] hover:bg-[#02996d] font-bold px-4 py-2 rounded-lg shadow-md transition">
                             +
                         </button>) :
-                        <input type="date" value={novaData} onChange={(e) => setNovaData(e.target.value)} className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03bb85] focus:border-transparent text-gray-800; mb-4"/>}
+                        <input type="date" value={novaData} onChange={(e) => changeDate(e.target.value)} className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03bb85] focus:border-transparent text-gray-800; mb-4"/>}
                 </div>
 
                 {loading ? 
@@ -94,7 +99,7 @@ export default function Agendamento() {
                                         <tr className="hover:bg-gray-50 transition">
                                             <td className="p-4 border-b text-center">{item.userId}</td>
                                             <td className="p-4 border-b text-center">{item.doctorId ?? "Sem Médico"}</td>
-                                            <td className="p-4 border-b text-center">{item.date}</td>
+                                            <td className="p-4 border-b text-center">{new Date(item.date).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }).replace(",", "")}</td>
                                             <td className="p-4 border-b text-center">
                                                 <button className="text-[#03bb85] font-medium hover:underline" onClick={() => setExpanded(expanded === item.id ? null : item.id) } >
                                                     {expanded === item.id ? "Fechar" : "Ver mais"}

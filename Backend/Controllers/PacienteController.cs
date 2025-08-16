@@ -22,7 +22,14 @@ namespace ClinicaAPI.Controllers {
             var userId = int.Parse(userIdClaim);
 
             //* Consulta do agendamento
-            var allScheduling = _db.Schedulings.Where(u => u.UserId == userId).ToList();
+            var allScheduling = (from s in _db.Schedulings
+                                    join u in _db.Users on s.UserId equals u.Id into paciente
+                                from p in paciente.DefaultIfEmpty()
+                                    join d in _db.Users on s.DoctorId equals d.Id into medico
+                                from m in medico.DefaultIfEmpty()
+                                where s.UserId == userId
+                                orderby s.Date
+                                select new {s.Id, s.Description, s.Date, UserId = p.Name, DoctorId = m != null ? m.Name : null}).ToList();
 
             return Ok(new { agendamentos = allScheduling });
         }

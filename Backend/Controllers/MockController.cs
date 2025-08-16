@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using ClinicaAPI.Data;
 using System.Security.Claims;
+using ClinicaAPI.Models;
 
 namespace ClinicaAPI.Controllers {
     [ApiController]
@@ -13,9 +14,38 @@ namespace ClinicaAPI.Controllers {
 
         //* POST /mock/triagem
         [HttpPost("triagem")]
-        public IActionResult Triagem() {
-            //TODO: Integração com IA que vai verificar a descrição do agendamento e definir o melhor medico
-            return Ok(new { status = "Ok" });
+        public IActionResult Triagem([FromQuery] int?id) {
+            var scheduling = _db.Schedulings.FirstOrDefault(s => s.Id == id);
+            if (scheduling == null || string.IsNullOrWhiteSpace(scheduling.Description)) return BadRequest(new { error = "Agendamento inválido ou sem descrição." });
+
+            var medicos = _db.Users.Where(u => u.Role == "Medico").ToList();
+            if (!medicos.Any()) return BadRequest(new { error = "Nenhum médico disponível." });
+
+            User? melhorMedico = null;
+            int melhorScore = -1;
+
+            foreach (var medico in medicos) {
+                if (string.IsNullOrWhiteSpace(medico.Description)) continue;
+
+                int score = 0;
+
+                foreach (var palavra in medico.Description.Split(' ', StringSplitOptions.RemoveEmptyEntries)) {
+                    if (scheduling.Description.Contains(palavra, StringComparison.OrdinalIgnoreCase))
+                        score++;
+                }
+
+                if (score > melhorScore) {
+                    melhorScore = score;
+                    melhorMedico = medico;
+                }
+            }
+
+            if (melhorMedico == null) return Ok(new { message = "Nenhum médico compatível encontrado." });
+
+            scheduling.DoctorId = melhorMedico.Id;
+            _db.SaveChanges();
+
+            return Ok(new { scheduling.Id });
         }
     }
 }

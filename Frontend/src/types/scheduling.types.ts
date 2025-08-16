@@ -20,3 +20,13 @@ export interface SchedulingResponse {
         date: string
     }[];
 }
+
+export interface SchedulingCreateResponse {
+    agendamento: {
+        id: number,
+        userId: number,
+        doctorId: number | null,
+        description: string,
+        date: string
+    };
+}
