@@ -38,6 +38,9 @@ namespace ClinicaAPI.Controllers {
         [Authorize(Roles = "Paciente")]
         [HttpPost("agendamentos")]
         public IActionResult PostAgendamento([FromBody] Scheduling scheduling) {
+            if (string.IsNullOrWhiteSpace(scheduling.Description)) return BadRequest(new { error = "Informação faltando, favor verificar." });
+            if (!scheduling.Date.HasValue) return BadRequest(new { error = "Data faltando, favor verificar." });
+
             //* Recupera o UserId
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrWhiteSpace(userIdClaim)) return BadRequest(new { error = "JWT sem Usuário" });

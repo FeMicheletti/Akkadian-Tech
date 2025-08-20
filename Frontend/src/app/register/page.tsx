@@ -2,6 +2,7 @@
 
 //* React
 import { useState } from "react";
+import { redirect } from "next/navigation";
 
 //* Components
 import Image from "next/image";
@@ -28,6 +29,11 @@ export default function Register() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        if (!name || !email || !password || !role || (role == "Medico" && !description)) {
+            toast.error("Favor preencher todos os campos", { style: { backgroundColor: "#ff4d4f", color: "white", fontWeight: 500 } });
+            return;
+        }
+
         const payload: RegisterPayload = {
             Name: name,
             Email: email,
@@ -40,8 +46,8 @@ export default function Register() {
         if ("error" in response) {
             toast.error(response.error, { style: { backgroundColor: "#ff4d4f", color: "white", fontWeight: 500 } });
         } else {
-            location.href = "/login";
             toast.success("Cadastro Realizado com sucesso");
+            redirect('/login');
         }
     };
 

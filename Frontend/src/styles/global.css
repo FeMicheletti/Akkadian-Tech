@@ -16,5 +16,9 @@ body {
 }
 
 .main-button {
-  @apply w-full mt-6 bg-[#03bb85] hover:bg-[#02996d] text-white font-semibold py-2 rounded-lg transition duration-200 shadow-md
+  @apply w-full mt-6 bg-[#03bb85] hover:bg-[#02996d] text-white font-semibold py-2 rounded-lg transition duration-200 shadow-md;
+}
+
+.main-date {
+  @apply px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03bb85] focus:border-transparent text-gray-800;
 }

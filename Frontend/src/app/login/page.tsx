@@ -2,6 +2,7 @@
 
 //* React
 import { useState } from "react";
+import { redirect } from "next/navigation";
 
 //* Components
 import Image from "next/image";
@@ -25,6 +26,11 @@ export default function Login() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        if  (!email || !password) {
+            toast.error("Favor preencher todos os campos", { style: { backgroundColor: "#ff4d4f", color: "white", fontWeight: 500 } });
+            return;
+        }
+
         const payload: LoginPayload = {
             Email: email,
             Password: password,
@@ -37,7 +43,8 @@ export default function Login() {
             localStorage.setItem("token", response.token);
             localStorage.setItem("userId", (response.userId).toString());
             localStorage.setItem("role", response.role);
-            location.href = "/agendamento";
+            localStorage.setItem("name", response.name);
+            redirect('/agendamento');
         }
     };
 

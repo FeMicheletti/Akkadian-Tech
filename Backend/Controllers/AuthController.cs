@@ -22,8 +22,7 @@ namespace ClinicaAPI.Controllers {
         [HttpPost("register")]
         public IActionResult Register([FromBody] User usuario)
         {
-            if (string.IsNullOrWhiteSpace(usuario.Email) || string.IsNullOrWhiteSpace(usuario.Name) || string.IsNullOrWhiteSpace(usuario.Password) || usuario.Role == null)
-            {
+            if (string.IsNullOrWhiteSpace(usuario.Email) || string.IsNullOrWhiteSpace(usuario.Name) || string.IsNullOrWhiteSpace(usuario.Password) || string.IsNullOrWhiteSpace(usuario.Role) || (usuario.Role == "Medico" && string.IsNullOrWhiteSpace(usuario.Description))) {
                 return BadRequest(new { error = "Informação faltando, favor verificar." });
             }
 
@@ -61,8 +60,7 @@ namespace ClinicaAPI.Controllers {
             var keyBytes = Encoding.ASCII.GetBytes(jwtKey);
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
+            var tokenDescriptor = new SecurityTokenDescriptor {
                 Subject = new ClaimsIdentity([
                     new Claim(ClaimTypes.NameIdentifier, userDb.Id.ToString()),
                     new Claim(ClaimTypes.Role, userDb.Role ?? throw new Exception("Sem Role")),
@@ -78,7 +76,7 @@ namespace ClinicaAPI.Controllers {
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
-            return Ok(new { token = tokenString, userId = userDb.Id, role = userDb.Role });
+            return Ok(new { token = tokenString, userId = userDb.Id, name = userDb.Name, role = userDb.Role });
         }
 
         //* GET /auth/validation

@@ -1,4 +1,6 @@
 // using ClinicaAPI.Services;
+using Azure;
+using Azure.AI.OpenAI;
 using ClinicaAPI.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;

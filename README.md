@@ -21,9 +21,22 @@ O objetivo é fornecer um sistema de agendamento médico com triagem automatizad
 
 ### Passos
 1. Clone este repositório.
-2. Na raiz do projeto, rode:
+2. Configure o .env do Front-end
+    | Variavel | Descrição             |
+    | -------- | --------------------- |
+    | API_URL  | URL da API do Backend |
+3. appsettings.Production.json (o appsettings.json tem o formato default do JSON)
+    | Variavel                               | Descrição                                 |
+    | -------------------------------------- | ----------------------------------------- |
+    | JWT -> Key                             | Chave para o token JWT                    |
+    | ConnectionStrings -> DefaultConnection | String de conexão para o Banco de Dados   |
+    | Front -> Url                           | URL do Frontend para configuração do CORS |
+    | OpenAI -> Endpoint                     | Endpoint da AZURE                         |
+    | OpenAI -> ApiKey                       | Chave da AZURE                            |
+    | OpenAI -> deployment                   | Deployment da AZURE                       |
+4. Na raiz do projeto, rode:
     ```docker-compose up --build```
-3. O sistema será inicializado com:
+5. O sistema será inicializado com:
 - **Backend (.NET API)** → http://localhost:5000
 - **Frontend (Next.js)** → http://localhost:3000
 - **Banco (PostgreSQL)** → localhost:5432
@@ -55,14 +68,12 @@ O objetivo é fornecer um sistema de agendamento médico com triagem automatizad
 - Visualizar agendamentos filtrados por data.
 
 ### Triagem (Mock de IA)
-- A triagem automática utiliza palavras-chave nos sintomas para recomendar uma especialidade médica.
-- Exemplo:
-| Descrição do Agendamento | Descrição do Médico                                   |
-| ------------------------ | ----------------------------------------------------- |
-| Dor de Cabeça            | Clinico Geral (Atendo Dor de Cabeça)                  |
-| Dor no peito             | Cardiologista (Atendo desde Dor no peito até Coração) | 
+- A triagem é feita automaticamento quando é salvo o agendamendo utilizando a Azure OpenAI, providenciando melhor atendimento ao usuário.
+- É possível forçar ela para refazer a triagem chamando a rota do /mock/triagem passando o id no queryString
 
-### 🔗 Endpoints Principais
+---
+
+## 🔗 Endpoints Principais
 
 | Método | Rota                         | Descrição                                 |
 |--------|------------------------------|-------------------------------------------|
@@ -76,7 +87,7 @@ O objetivo é fornecer um sistema de agendamento médico com triagem automatizad
 
 ---
 
-### 🎨 Frontend
+## 🎨 Frontend
 - Login e cadastro diferenciando paciente e médico.
 - Interface do paciente para criar e visualizar agendamentos.
 - Interface do médico para visualizar agendamentos do dia.
@@ -87,8 +98,7 @@ O objetivo é fornecer um sistema de agendamento médico com triagem automatizad
 # 🔮 Melhorias Futuras
 Se tivesse mais tempo, eu implementaria:
 - CI/CD (pipeline automatizado).
-- Mais telas e funcionalidades no frontend.
-- Melhoria de arquitetura no backend (ex.: CQRS, MediatR).
+- Mais telas e funcionalidades no frontend (Com dashboard, edição de agendamentos, verificação de agenda do doutor, etc...).
+- Melhoria de arquitetura no backend.
 - Testes integrados e unitários.
-- Integração com IA real (OpenAI/Azure OpenAI).
 - Melhoria no design (UI/UX).
